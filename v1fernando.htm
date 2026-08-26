@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>CENSO HABILITADORES KOF</title>
+
+<style>
+
+:root{
+    --rojo:#E30613;
+    --negro:#111111;
+    --blanco:#ffffff;
+    --gris:#f5f6f8;
+    --verde:#0F9D58;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Segoe UI',sans-serif;
+    background:var(--gris);
+    padding:30px;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+    background:white;
+    border-radius:20px;
+    overflow:hidden;
+    box-shadow:0 15px 40px rgba(0,0,0,.15);
+}
+
+/* HEADER */
+
+.header{
+    background:linear-gradient(135deg,#000,#222);
+    border-bottom:8px solid var(--rojo);
+    padding:30px 40px;
+}
+
+.header-content{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.header-text h1{
+    color:white;
+    font-size:42px;
+    margin-bottom:10px;
+}
+
+.header-text p{
+    color:#d8d8d8;
+    font-size:18px;
+}
+
+.car-image{
+    width:320px;
+    filter:drop-shadow(0 10px 20px rgba(0,0,0,.35));
+}
+
+/* CONTENT */
+
+.content{
+    padding:40px;
+}
+
+.card{
+    background:white;
+    border-left:6px solid var(--rojo);
+    border-radius:15px;
+    padding:25px;
+    margin-bottom:25px;
+    box-shadow:0 5px 12px rgba(0,0,0,.08);
+}
+
+.card-title{
+    font-size:20px;
+    font-weight:bold;
+    margin-bottom:15px;
+}
+
+label{
+    display:block;
+    margin-bottom:10px;
+    font-weight:600;
+}
+
+input[type=file]{
+    width:100%;
+}
+
+input[type=text]{
+    width:100%;
+    padding:14px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    font-size:16px;
+}
+
+.form-busqueda{
+    display:flex;
+    gap:15px;
+    flex-wrap:wrap;
+}
+
+.form-busqueda input{
+    flex:1;
+}
+
+button{
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:bold;
+    transition:.2s;
+}
+
+button:hover{
+    opacity:.9;
+}
+
+.btn-buscar{
+    background:var(--rojo);
+    color:white;
+    padding:14px 28px;
+}
+
+.btn-si{
+    background:var(--verde);
+    color:white;
+    padding:12px 25px;
+}
+
+.btn-no{
+    background:#333;
+    color:white;
+    padding:12px 25px;
+    margin-left:10px;
+}
+
+/* RESULTADO */
+
+#resultado{
+    margin-top:20px;
+}
+
+.resultado-card{
+    background:white;
+    padding:25px;
+    border-radius:15px;
+    border-top:5px solid var(--rojo);
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+}
+
+.resultado-card h2{
+    color:var(--rojo);
+    margin-bottom:20px;
+}
+
+.dato{
+    margin-bottom:12px;
+    font-size:17px;
+}
+
+.dato strong{
+    color:var(--rojo);
+}
+
+.confirmacion{
+    margin-top:25px;
+    border-top:1px solid #ddd;
+    padding-top:20px;
+}
+
+.success{
+    background:#EAF8F0;
+    border-left:5px solid var(--verde);
+    color:var(--verde);
+    padding:20px;
+    border-radius:10px;
+    font-weight:bold;
+}
+
+.error{
+    background:#FEECEC;
+    border-left:5px solid var(--rojo);
+    color:var(--rojo);
+    padding:20px;
+    border-radius:10px;
+    font-weight:bold;
+}
+
+.footer{
+    background:#111;
+    color:white;
+    text-align:center;
+    padding:18px;
+}
+
+@media(max-width:900px){
+
+    .header-content{
+        flex-direction:column;
+        text-align:center;
+    }
+
+    .car-image{
+        width:220px;
+        margin-top:20px;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+
+<div class="header-content">
+
+<div class="header-text">
+
+<h1>CENSO HABILITADORES KOF</h1>
+
+<p>
+Validación de Información Colaboradores
+</p>
+
+</div>
+
+<img
+src="march.png"
+alt="Nissan March"
+class="car-image">
+
+</div>
+
+</div>
+
+<div class="content">
+
+<div class="card">
+
+<div class="card-title">
+📁 Carga de Archivo
+</div>
+
+<label>
+Seleccione el archivo Habilitadoresisma.csv
+</label>
+
+<input
+type="file"
+id="archivoCSV"
+accept=".csv">
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+🔍 Consulta de Empleado
+</div>
+
+<label>
+Capture su número de empleado
+</label>
+
+<div class="form-busqueda">
+
+<input
+type="text"
+id="numeroEmpleado"
+placeholder="Número de empleado sin MX">
+
+<button
+class="btn-buscar"
+onclick="buscarEmpleado()">
+BUSCAR
+</button>
+
+</div>
+
+</div>
+
+<div id="resultado">
+
+<div class="resultado-card">
+Esperando carga del archivo CSV...
+</div>
+
+</div>
+
+</div>
+
+<div class="footer">
+CENSO HABILITADORES KOF | Portal Corporativo
+</div>
+
+</div>
+
+<script>
+
+let registros = [];
+
+/* CARGA CSV */
+
+document.getElementById("archivoCSV")
+.addEventListener("change", function(event){
+
+    const archivo = event.target.files[0];
+
+    if(!archivo) return;
+
+    const lector = new FileReader();
+
+    lector.onload = function(e){
+
+        registros = e.target.result
+        .split(/\r?\n/)
+        .filter(x => x.trim() !== "");
+
+        document.getElementById("resultado").innerHTML=`
+        <div class="success">
+        ✅ Archivo cargado correctamente.<br><br>
+        Registros encontrados: ${registros.length}
+        </div>`;
+    }
+
+    lector.readAsText(archivo,"UTF-8");
+
+});
+
+/* ENTER */
+
+document.getElementById("numeroEmpleado")
+.addEventListener("keypress",function(e){
+
+    if(e.key==="Enter"){
+        buscarEmpleado();
+    }
+
+});
+
+/* BUSCAR EMPLEADO */
+
+function buscarEmpleado(){
+
+    const numero =
+    document.getElementById("numeroEmpleado").value.trim();
+
+    let encontrado = null;
+
+    for(let i=0;i<registros.length;i++){
+
+        const col = registros[i].split(",");
+
+        if(col[0] && col[0].trim()===numero){
+
+            encontrado = col;
+            break;
+        }
+    }
+
+    if(!encontrado){
+
+        document.getElementById("resultado").innerHTML=`
+        <div class="error">
+        No se encontró el empleado.
+        </div>`;
+        return;
+    }
+
+    document.getElementById("resultado").innerHTML=`
+
+    <div class="resultado-card">
+
+        <h2>✅ Empleado Encontrado</h2>
+
+        <div class="dato">
+            <strong>Número Empleado:</strong>
+            ${encontrado[0]}
+        </div>
+
+        <div class="dato">
+            <strong>Empleado:</strong>
+            ${encontrado[6]}
+        </div>
+
+        <div class="dato">
+            <strong>Puesto Usuario:</strong>
+            ${encontrado[7]}
+        </div>
+
+        <div class="confirmacion">
+
+            <h3>
+            ¿La información mostrada es correcta?
+            </h3>
+
+            <br>
+
+            <button class="btn-si"
+            onclick="confirmarDatos()">
+            ✅ Sí
+            </button>
+
+            <button class="btn-no"
+            onclick="recapturarEmpleado()">
+            ❌ No
+            </button>
+
+        </div>
+
+    </div>
+    `;
+}
+
+/* VALIDACION EMPLEADO */
+
+function confirmarDatos(){
+
+    document.getElementById("resultado").innerHTML=`
+
+    <div class="resultado-card">
+
+        <h2>✅ Información Validada</h2>
+
+        <h3>
+        ¿Tiene asignado utilitario de la empresa?
+        </h3>
+
+        <br>
+
+        <button class="btn-si"
+        onclick="tieneUtilitario()">
+        ✅ Sí
+        </button>
+
+        <button class="btn-no"
+        onclick="finalizarSinUtilitario()">
+        ❌ No
+        </button>
+
+    </div>
+
+    `;
+}
+
+/* UTILITARIO */
+
+function tieneUtilitario(){
+
+    const numero =
+    document.getElementById("numeroEmpleado").value.trim();
+
+    let empleado = null;
+
+    for(let i=0;i<registros.length;i++){
+
+        const col = registros[i].split(",");
+
+        if(col[0].trim()===numero){
+
+            empleado = col;
+            break;
+        }
+    }
+
+    document.getElementById("resultado").innerHTML=`
+
+    <div class="resultado-card">
+
+        <h2>🚗 Utilitario Asignado</h2>
+
+        <div class="dato"><strong>Número Equipo:</strong> ${empleado[1]}</div>
+        <div class="dato"><strong>Denom.tipo:</strong> ${empleado[2]}</div>
+
+
+        <div class="confirmacion">
+
+            <h3>
+            ¿La información del utilitario es correcta?
+            </h3>
+
+            <br>
+
+            <button class="btn-si"
+            onclick="finalizarCenso()">
+            ✅ Sí
+            </button>
+
+            <button class="btn-no"
+            onclick="capturarEquipoCorrecto()">
+            ❌ No
+            </button>
+
+        </div>
+
+    </div>
+    `;
+}
+
+/* CORREGIR EQUIPO */
+
+function capturarEquipoCorrecto(){
+
+    document.getElementById("resultado").innerHTML=`
+
+    <div class="resultado-card">
+
+        <h2>🚗 Corrección de Equipo</h2>
+
+        <p>
+        Capture el número de economico sin letras.
+        </p>
+
+        <br>
+
+        <input type="text"
+        id="equipoCorrecto"
+        placeholder="Número de Equipo">
+
+        <br><br>
+
+        <button class="btn-buscar"
+        onclick="buscarEquipoCorrecto()">
+        Buscar Equipo
+        </button>
+
+    </div>
+    `;
+}
+
+function buscarEquipoCorrecto(){
+
+    const equipo =
+    document.getElementById("equipoCorrecto")
+    .value.trim();
+
+    let encontrado = null;
+
+    for(let i=0;i<registros.length;i++){
+
+        const col = registros[i].split(",");
+
+        if(col[1] && col[1].trim()===equipo){
+
+            encontrado = col;
+            break;
+        }
+    }
+
+    if(!encontrado){
+
+        document.getElementById("resultado").innerHTML=`
+        <div class="error">
+        No se encontró el equipo ${equipo}
+        </div>`;
+        return;
+    }
+
+    document.getElementById("resultado").innerHTML=`
+
+    <div class="resultado-card">
+
+        <h2>🚗 Equipo Encontrado</h2>
+
+        <div class="dato"><strong>Número Equipo:</strong> ${encontrado[1]}</div>
+        <div class="dato"><strong>Denom.tipo:</strong> ${encontrado[2]}</div>
+  
+
+        <div class="confirmacion">
+
+            <h3>
+            ¿La información del equipo es correcta?
+            </h3>
+
+            <br>
+
+            <button class="btn-si"
+            onclick="finalizarCenso()">
+            ✅ Sí
+            </button>
+
+            <button class="btn-no"
+            onclick="capturarEquipoCorrecto()">
+            ❌ No
+            </button>
+
+        </div>
+
+    </div>
+    `;
+}
+
+/* FINALIZAR */
+
+function finalizarSinUtilitario(){
+
+    document.getElementById("resultado").innerHTML=`
+    <div class="success">
+    ✅ CENSO FINALIZADO<br><br>
+    Se registró que no cuenta con utilitario asignado.
+    </div>`;
+}
+
+function finalizarCenso(){
+
+    document.getElementById("resultado").innerHTML=`
+    <div class="success">
+    ✅ CENSO FINALIZADO<br><br>
+    Gracias por validar la información.
+    </div>`;
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>CENSO HABILITADORES KOF</title>
+
+<style>
+
+body{
+    font-family:Segoe UI,Arial,sans-serif;
+    background:#f5f6f8;
+    margin:0;
+    padding:30px;
+}
+
+.container{
+    max-width:1000px;
+    margin:auto;
+    background:white;
+    border-radius:15px;
+    overflow:hidden;
+    box-shadow:0 0 15px rgba(0,0,0,.15);
+}
+
+.header{
+    background:#111;
+    color:white;
+    padding:30px;
+    border-bottom:6px solid #E30613;
+}
+
+.header h1{
+    margin:0;
+}
+
+.content{
+    padding:30px;
+}
+
+.card,
+.resultado-card{
+    background:white;
+    padding:20px;
+    margin-bottom:20px;
+    border-radius:10px;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
+    transition:all .25s ease;
+}
+
+.card{
+    border-left:5px solid #E30613;
+}
+
+.resultado-card{
+    border-top:5px solid #E30613;
+}
+
+.card:hover,
+.resultado-card:hover{
+    transform:translateY(-2px);
+}
+
+input[type=text],
+input[type=file]{
+    width:100%;
+    padding:12px;
+    box-sizing:border-box;
+    margin-top:10px;
+}
+
+button{
+    background:#E30613;
+    color:white;
+    border:none;
+    padding:12px 20px;
+    border-radius:8px;
+    cursor:pointer;
+    margin-top:15px;
+    margin-right:10px;
+}
+
+.btn-si{
+    background:#0F9D58;
+}
+
+.btn-no{
+    background:#333;
+}
+
+.dato{
+    margin-bottom:10px;
+}
+
+.success{
+    background:#eaf8f0;
+    color:#0F9D58;
+    padding:20px;
+    border-radius:10px;
+    font-weight:bold;
+}
+
+.error{
+    background:#feecec;
+    color:#E30613;
+    padding:20px;
+    border-radius:10px;
+    font-weight:bold;
+}
+
+.footer{
+    background:#111;
+    color:white;
+    text-align:center;
+    padding:15px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>CENSO HABILITADORES KOF</h1>
+        <p>Validación de Información Colaboradores</p>
+    </div>
+
+    <div class="content">
+
+        <div class="card">
+
+            <h3>📁 Cargar archivo CSV</h3>
+
+            <input
+                type="file"
+                id="archivoCSV"
+                accept=".csv">
+
+        </div>
+
+        <div class="card">
+
+            <h3>🔍 Buscar empleado</h3>
+
+            <input
+                type="text"
+                id="numeroEmpleado"
+                placeholder="Número de empleado">
+
+            <button onclick="buscarEmpleado()">
+                BUSCAR
+            </button>
+
+        </div>
+
+        <div id="resultado">
+
+            <div class="resultado-card">
+                Esperando carga del archivo CSV...
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="footer">
+        CENSO HABILITADORES KOF
+    </div>
+
+</div>
+
+<script>
+
+let registros = [];
+let empleadoActual = null;
+
+const intentos = {
+    economico:0,
+    serie:0,
+    celular:0
+};
+
+const resultado = document.getElementById("resultado");
+
+function mostrarMensaje(tipo,texto){
+
+    resultado.innerHTML = `
+        <div class="${tipo}">
+            ${texto}
+        </div>
+    `;
+}
+
+function mostrarTarjeta(html){
+
+    resultado.innerHTML = `
+        <div class="resultado-card">
+            ${html}
+        </div>
+    `;
+}
+
+function buscarRegistro(columna,valor,mayusculas=false){
+
+    return registros.find(reg => {
+
+        const dato = (reg[columna] || "").trim();
+
+        return mayusculas
+            ? dato.toUpperCase() === valor.toUpperCase()
+            : dato === valor;
+
+    });
+
+}
+
+document.getElementById("archivoCSV")
+.addEventListener("change", function(e){
+
+    const archivo = e.target.files[0];
+
+    if(!archivo) return;
+
+    const lector = new FileReader();
+
+    lector.onload = function(ev){
+
+        registros = ev.target.result
+            .split(/\r?\n/)
+            .filter(f => f.trim() !== "")
+            .map(f => f.split(","));
+
+        mostrarMensaje(
+            "success",
+            `✅ Archivo cargado correctamente.<br><br>
+            Registros: ${registros.length}`
+        );
+
+    };
+
+    lector.readAsText(archivo);
+
+});
+
+document.getElementById("numeroEmpleado")
+.addEventListener("keypress", function(e){
+
+    if(e.key === "Enter"){
+        buscarEmpleado();
+    }
+
+});
+
+function buscarEmpleado(){
+
+    if(!registros.length){
+
+        return mostrarMensaje(
+            "error",
+            "Debe cargar primero el archivo CSV."
+        );
+    }
+
+    const numero = document
+        .getElementById("numeroEmpleado")
+        .value.trim();
+
+    if(!numero){
+
+        return mostrarMensaje(
+            "error",
+            "Ingrese un número de empleado."
+        );
+    }
+
+    empleadoActual = buscarRegistro(0,numero);
+
+    if(!empleadoActual){
+
+        return mostrarMensaje(
+            "error",
+            "❌ Empleado no encontrado."
+        );
+    }
+
+    mostrarTarjeta(`
+
+        <h2>✅ Empleado Encontrado</h2>
+
+        <div class="dato">
+            <strong>Número Empleado:</strong>
+            ${empleadoActual[0]}
+        </div>
+
+        <div class="dato">
+            <strong>Nombre:</strong>
+            ${empleadoActual[6] || "Sin información"}
+        </div>
+
+        <div class="dato">
+            <strong>Puesto:</strong>
+            ${empleadoActual[7] || "Sin información"}
+        </div>
+
+        <button class="btn-si"
+                onclick="preguntarVehiculo()">
+            Continuar
+        </button>
+
+    `);
+
+}
+
+function preguntarVehiculo(){
+
+    mostrarTarjeta(`
+
+        <h2>🚗 Vehículo Asignado</h2>
+
+        <p>¿Tiene vehículo asignado?</p>
+
+        <button class="btn-si"
+                onclick="capturarEconomico()">
+            SI
+        </button>
+
+        <button class="btn-no"
+                onclick="mostrarActivos()">
+            NO
+        </button>
+
+    `);
+
+}
+
+function capturarEconomico(){
+
+    mostrarTarjeta(`
+
+        <h2>🚗 Captura Económico</h2>
+
+        <input
+            type="text"
+            id="economicoCapturado"
+            placeholder="Ingrese económico">
+
+        <button class="btn-si"
+                onclick="buscarEconomico()">
+            Buscar
+        </button>
+
+    `);
+
+}
+
+function buscarEconomico(){
+
+    const economico =
+        document.getElementById("economicoCapturado")
+        .value.trim();
+
+    if(!economico){
+
+        alert("Debe ingresar un económico");
+        return;
+    }
+
+    const encontrado =
+        buscarRegistro(1,economico);
+
+    if(encontrado){
+
+        intentos.economico = 0;
+
+        return mostrarTarjeta(`
+
+            <h2>✅ Vehículo Encontrado</h2>
+
+            <div class="dato">
+                <strong>Económico:</strong>
+                ${encontrado[1]}
+            </div>
+
+            <div class="dato">
+                <strong>Modelo:</strong>
+                ${encontrado[2] || ""}
+            </div>
+
+            <button class="btn-si"
+                    onclick="mostrarActivos()">
+                Continuar
+            </button>
+
+        `);
+    }
+
+    intentos.economico++;
+
+    if(intentos.economico < 2){
+
+        resultado.innerHTML = `
+            <div class="error">
+                ❌ Económico no encontrado
+                <br><br>
+                Intente nuevamente
+            </div>
+
+            <button class="btn-si"
+                    onclick="capturarEconomico()">
+                Reintentar
+            </button>
+        `;
+
+        return;
+    }
+
+    mostrarTarjeta(`
+
+        <h2>⚠ Económico no registrado</h2>
+
+        <p>¿Desea agregar el económico ${economico}?</p>
+
+        <button class="btn-si"
+                onclick="mostrarActivos()">
+            SI
+        </button>
+
+        <button class="btn-no"
+                onclick="capturarEconomico()">
+            NO
+        </button>
+
+    `);
+
+}
+
+function mostrarActivos(){
+
+    mostrarTarjeta(`
+
+        <h2>📱 Habilitadores Asignados</h2>
+
+        <div class="dato">
+            <strong>Serie HH:</strong>
+            ${empleadoActual[8] || "No asignada"}
+        </div>
+
+        <div class="dato">
+            <strong>Celular HH:</strong>
+            ${
+                empleadoActual[9] &&
+                empleadoActual[9].trim() !== ""
+                ? empleadoActual[9]
+                : "SIN CELULAR REGISTRADO"
+            }
+        </div>
+
+        <button class="btn-si"
+                onclick="capturarSerieHH()">
+            Validar Serie HH
+        </button>
+
+    `);
+
+}
+
+function capturarSerieHH(){
+
+    mostrarTarjeta(`
+
+        <h2>📱 Captura Serie HH</h2>
+
+        <input
+            type="text"
+            id="serieCapturada"
+            placeholder="Ingrese Serie HH">
+
+        <button class="btn-si"
+                onclick="buscarSerieHH()">
+            Buscar
+        </button>
+
+    `);
+
+}
+
+function buscarSerieHH(){
+
+    const serie =
+        document.getElementById("serieCapturada")
+        .value.trim();
+
+    if(!serie){
+
+        alert("Debe ingresar una Serie HH");
+        return;
+    }
+
+    const encontrada =
+        buscarRegistro(8,serie,true);
+
+    if(encontrada){
+
+        intentos.serie = 0;
+
+        return mostrarMensaje(
+            "success",
+            `
+            ✅ Serie HH encontrada
+            <br><br>
+            ${encontrada[8]}
+            <br><br>
+            <button class="btn-si"
+                    onclick="capturarCelular()">
+                Continuar
+            </button>
+            `
+        );
+    }
+
+    intentos.serie++;
+
+    if(intentos.serie < 2){
+
+        resultado.innerHTML = `
+            <div class="error">
+                ❌ Serie HH no encontrada
+                <br><br>
+                Intente nuevamente
+            </div>
+
+            <button class="btn-si"
+                    onclick="capturarSerieHH()">
+                Reintentar
+            </button>
+        `;
+
+        return;
+    }
+
+    mostrarTarjeta(`
+
+        <h2>⚠ Serie HH no registrada</h2>
+
+        <p>¿Desea agregarla?</p>
+
+        <button class="btn-si"
+                onclick="capturarCelular()">
+            SI
+        </button>
+
+        <button class="btn-no"
+                onclick="capturarSerieHH()">
+            NO
+        </button>
+
+    `);
+
+}
+
+function capturarCelular(){
+
+    mostrarTarjeta(`
+
+        <h2>📲 Validar / Registrar Celular HH</h2>
+
+        <input
+            type="text"
+            id="celularCapturado"
+            placeholder="Ingrese número celular">
+
+        <button class="btn-si"
+                onclick="buscarCelular()">
+            Validar
+        </button>
+
+    `);
+
+}
+
+function buscarCelular(){
+
+    const celular =
+        document.getElementById("celularCapturado")
+        .value.trim();
+
+    if(!celular){
+
+        alert("Debe ingresar un número celular");
+        return;
+    }
+
+    const celularAsignado =
+        (empleadoActual[9] || "").trim();
+
+    if(celularAsignado === ""){
+
+        empleadoActual[9] = celular;
+
+        return mostrarMensaje(
+            "success",
+            `
+            ✅ Celular registrado correctamente
+            <br><br>
+            Número capturado:
+            <strong>${celular}</strong>
+            <br><br>
+            <button class="btn-si"
+                    onclick="finalizarCenso()">
+                Finalizar
+            </button>
+            `
+        );
+    }
+
+    if(celular === celularAsignado){
+
+        intentos.celular = 0;
+
+        return mostrarMensaje(
+            "success",
+            `
+            ✅ Celular validado correctamente
+            <br><br>
+            ${celular}
+            <br><br>
+            <button class="btn-si"
+                    onclick="finalizarCenso()">
+                Finalizar
+            </button>
+            `
+        );
+    }
+
+    intentos.celular++;
+
+    if(intentos.celular < 2){
+
+        resultado.innerHTML = `
+            <div class="error">
+                ❌ Número celular incorrecto
+                <br><br>
+                Intente nuevamente
+            </div>
+
+            <button class="btn-si"
+                    onclick="capturarCelular()">
+                Reintentar
+            </button>
+        `;
+
+        return;
+    }
+
+    mostrarTarjeta(`
+
+        <h2>⚠ Celular diferente al registrado</h2>
+
+        <div class="dato">
+            <strong>Celular en base:</strong>
+            ${celularAsignado}
+        </div>
+
+        <div class="dato">
+            <strong>Celular capturado:</strong>
+            ${celular}
+        </div>
+
+        <p>¿Desea actualizar el número celular?</p>
+
+        <button class="btn-si"
+                onclick="
+                    empleadoActual[9]='${celular}';
+                    finalizarCenso();
+                ">
+            SI
+        </button>
+
+        <button class="btn-no"
+                onclick="capturarCelular()">
+            NO
+        </button>
+
+    `);
+
+}
+
+function finalizarCenso(){
+
+    empleadoActual = null;
+
+    intentos.economico = 0;
+    intentos.serie = 0;
+    intentos.celular = 0;
+
+    document.getElementById("numeroEmpleado").value = "";
+
+    mostrarMensaje(
+        "success",
+        `
+        ✅ CENSO FINALIZADO
+        <br><br>
+        Gracias por validar su información.
+        `
+    );
+
+}
+
+</script>
+
+</body>
+</html>
